@@ -29,13 +29,24 @@ class AudienceViewSet(ReadOnlyModelViewSet):
         every channel.
 
         Performance is the mean audience during the segment of the topic.
-        :return: JSON with the following format:
+        :return: JSON response
 
         {
             "topic1": {"A": 1.2, "B": 3.4},
             "topic2": {"A": 6.4, "B": 6123},
             ...
         }
+        ---
+        parameters:
+        - name: date
+          description: Date in format %Y-%m-%d (e.g, 2015-04-21)
+          required: true
+          type: string
+          paramType: query
+        omit_serializer: true
+        produces:
+        - application/json
+
         """
         #  Parse parameters from URL
         try:
@@ -99,6 +110,34 @@ class TopicViewSet(ReadOnlyModelViewSet):
                 ...
             ]},
         ]
+
+        ---
+        parameters:
+        - name: topic
+          description: Topic to search
+          required: true
+          type: string
+          paramType: query
+        omit_serializer: true
+        many: true
+        produces:
+        - application/json
+        type:
+          channel:
+            type: string
+            required: true
+          audience:
+            type: array
+            required: true
+            items:
+              type:
+                timestamp:
+                  type: float
+                  required: true
+                value:
+                  type: float
+                  required: true
+
         """
 
         try:
@@ -124,23 +163,42 @@ class TopicViewSet(ReadOnlyModelViewSet):
     def best_segments(self, request, format=None, *args, **kwargs):
         """
         For a given topic, show segments where performance on each channel was best.
-        :return: JSON response ->
+        :return: JSON response:
 
-        { "B": [
-                {
+        { "B": [{
                     "start_ts": 1447498590,
-                    "audience": 854696.6666666666,
+                    "audience": 854696,
                     "id": 29235,
                     "end_ts": 1447498769,
-                    "channel__name": "B"
                 },
                 {
                     "start_ts": 1447576890,
-                    "audience": 791359.0,
+                    "audience": 791359,
                     "id": 19958,
                     "end_ts": 1447577069,
-                    "channel__name": "B"
                 },
+                ...
+               ],
+          "A": [{
+                    "start_ts": 1447498590,
+                    "audience": 854696,
+                    "id": 29235,
+                    "end_ts": 1447498769,
+                },
+                ...
+                ]
+        }
+        ---
+        parameters:
+        - name: topic
+          description: Topic to search
+          required: true
+          type: string
+          paramType: query
+        omit_serializer: true
+        produces:
+        - application/json
+
         """
 
         #  Getting "topic" from query parameters
