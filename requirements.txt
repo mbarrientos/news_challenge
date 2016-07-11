@@ -1,0 +1,16 @@
+
+Django==1.9
+psycopg2
+djangorestframework
+
+numpy
+pandas
+django-pandas
+
+drfdocs
+django-rest-swagger
+
+ipdb==0.9.4
+
+
+
