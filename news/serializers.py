@@ -1,3 +1,6 @@
+"""
+Basic serializers for news_desk models.
+"""
 from rest_framework.serializers import ModelSerializer
 
 from news.models import Topic, Audience, Segment, Channel

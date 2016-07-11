@@ -19,8 +19,6 @@ def to_epoch(*args):
 
 
 class AudienceViewSet(ReadOnlyModelViewSet):
-    """
-    """
     queryset = Audience.objects.all()
     serializer_class = AudienceSerializer
 
@@ -126,35 +124,68 @@ class TopicViewSet(ReadOnlyModelViewSet):
     def best_segments(self, request, format=None, *args, **kwargs):
         """
         For a given topic, show segments where performance on each channel was best.
-        :return:
+        :return: JSON response ->
+
+        { "B": [
+                {
+                    "start_ts": 1447498590,
+                    "audience": 854696.6666666666,
+                    "id": 29235,
+                    "end_ts": 1447498769,
+                    "channel__name": "B"
+                },
+                {
+                    "start_ts": 1447576890,
+                    "audience": 791359.0,
+                    "id": 19958,
+                    "end_ts": 1447577069,
+                    "channel__name": "B"
+                },
         """
 
+        #  Getting "topic" from query parameters
         try:
             topic_name = request.query_params['topic']
         except KeyError:
             raise ParseError('Missing parameter "topic".')
 
+        #  Retrieving all related topics
         topics = Topic.objects.filter(name__iexact=topic_name).select_related('segment')
+
+        #  Getting segments related to selected topic
         segment_ids = topics.values_list('segment__id', flat=True)
         segments = Segment.objects.filter(id__in=segment_ids)
+
         if topics:
+            #   Building filters to retrieve only related audience timestamps
             filters = [Q(timestamp__range=(t.segment.start_ts, t.segment.end_ts)) for t in topics]
+
+            # Building audience DataFrame
             df_audiences = read_frame(Audience.objects.filter(reduce((lambda x, y: x | y), filters)),
                                       fieldnames=('timestamp', 'value', 'channel__name'))
 
+            #  Building segments DataFrame
             df = read_frame(segments, fieldnames=('id', 'start_ts', 'end_ts', 'channel__name'))
+
+            #  Function to generate mean audience value in a segment
             mean_func = lambda x: df_audiences[(df_audiences['timestamp'] <= x['end_ts'])
                                                & (df_audiences['timestamp'] >= x['start_ts'])
                                                & (df_audiences['channel__name'] == x['channel__name'])
                                                ]['value'].mean()
 
+            #   Applying mean function
             df['audience'] = df.apply(mean_func, axis=1)
 
+            #  Building response object
             response = {}
             for ch, df in df.groupby('channel__name'):
-                response[ch] = df.sort_values(by=['channel__name', 'audience'], ascending=(True, False)).to_dict(
-                    orient='record')
+                #  For each channel, we order audience values descending.
+                response[ch] = df.sort_values(
+                    by=['channel__name', 'audience'],
+                    ascending=(True, False)
+                ).drop('channel__name', axis=1).to_dict(orient='record')
         else:
+            # No topics were found for the input parameter
             response = []
 
         return Response(response)

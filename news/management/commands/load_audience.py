@@ -8,6 +8,10 @@ from news.models import Channel, Audience
 
 
 class Command(BaseCommand):
+    """
+    Load audience dataset located at settings.AUDIENCE_FILE into database.
+    """
+
     def handle(self, *args, **kwargs):
         c_names = ('A', 'B',)
 
@@ -25,5 +29,3 @@ class Command(BaseCommand):
                          for idx, s in enumerate(sizes)]
 
             Audience.objects.bulk_create(audiences)
-
-
