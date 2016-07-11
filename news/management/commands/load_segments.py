@@ -20,7 +20,7 @@ class Command(BaseCommand):
             channels.append(Channel.objects.get_or_create(name=c)[0])
 
         segments = []
-        with open(os.path.join(settings.BASE_DIR, settings.FILES_DIR, settings.SEGMENTS_FILE)) as f:
+        with open(os.path.join(settings.BASE_DIR, settings.SEGMENTS_FILE)) as f:
             for line in f.readlines():
                 segments.append(json.loads(line))
 

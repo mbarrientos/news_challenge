@@ -119,10 +119,9 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 100
 }
 
-# Application settings
-AUDIENCE_FILE = 'audience.json'
-SEGMENTS_FILE = 'segments.json'
-FILES_DIR = 'news_challenge'
+# Fixture files
+AUDIENCE_FILE = 'fixtures/audience.json'
+SEGMENTS_FILE = 'fixtures/segments.json'
 
 CHANNELS = ('A', 'B',)
 

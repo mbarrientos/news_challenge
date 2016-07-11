@@ -18,10 +18,17 @@ Once cloned, enter the project directory and run:
 docker-compose build
 ```
 ## Load initial data
-Initial fixtures are located within the [news_challenge](./news_challenge/) directory. To load the data just run the following commands:
+Initial fixtures are located within the [fixtures](./fixtures/) directory. To load the data just run the following commands:
 ```
 docker-compose run web ./init.sh
 ```
+> If you want to add different dataset files (keeping the same format) you can modify the keys at [settings.py](./news_desk/settings.py):
+``` 
+# Fixture files
+AUDIENCE_FILE = 'fixtures/audience.json'
+SEGMENTS_FILE = 'fixtures/segments.json'
+```
+
 ## Running the app
 ```
 docker-compose up -d
