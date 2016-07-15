@@ -1,14 +1,13 @@
 
 Django==1.9
-psycopg2
-djangorestframework
+psycopg2==2.6.2
+djangorestframework==3.4.0
 
-numpy
-pandas
-django-pandas
+numpy==1.11
+pandas==0.18.1
+django-pandas==0.4.1
 
-drfdocs
-django-rest-swagger
+django-rest-swagger==0.3.8
 
 ipdb==0.9.4
 
