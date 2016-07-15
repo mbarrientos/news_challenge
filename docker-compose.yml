@@ -2,12 +2,13 @@ version: '2'
 services:
   web:
     build: .
+    image: newsdesk
     command: /app/run.sh
     volumes:
       - .:/app
     ports:
       - "8000:8000"
-    depends_on:
+    links:
       - db
 
   db:
